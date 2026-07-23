@@ -1,0 +1,6 @@
+{
+  "name": "Haneeza Activewear",
+  "description": "Minimalist high-performance activewear store with interactive product details, size and color selectors, cart, and category navigation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, ShoppingBag, Search } from 'lucide-react';
+import { Menu, ShoppingBag, Search, Sparkles, Layout } from 'lucide-react';
 
 interface HeaderProps {
   onOpenNav: () => void;
@@ -7,6 +7,8 @@ interface HeaderProps {
   cartCount: number;
   onLogoClick: () => void;
   onOpenSearch?: () => void;
+  appMode?: 'showcase' | 'live';
+  onToggleAppMode?: (mode: 'showcase' | 'live') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -14,17 +16,48 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCart,
   cartCount,
   onLogoClick,
-  onOpenSearch
+  onOpenSearch,
+  appMode = 'showcase',
+  onToggleAppMode
 }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-[#fcf9f8]/95 backdrop-blur-md border-b border-[#e5e2e1]/60 h-16 px-5 flex items-center justify-between transition-all">
-      <button
-        onClick={onOpenNav}
-        className="text-[#2B5A64] hover:opacity-80 p-2 -ml-2 rounded-lg transition-all active:scale-95"
-        aria-label="Open menu"
-      >
-        <Menu className="w-6 h-6 stroke-[1.75]" />
-      </button>
+    <header className="fixed top-0 left-0 right-0 z-40 bg-[#fcf9f8]/95 backdrop-blur-md border-b border-[#e5e2e1]/60 h-16 px-4 sm:px-6 flex items-center justify-between transition-all">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onOpenNav}
+          className="text-[#2B5A64] hover:opacity-80 p-2 -ml-2 rounded-lg transition-all active:scale-95"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6 stroke-[1.75]" />
+        </button>
+
+        {onToggleAppMode && (
+          <div className="hidden md:flex items-center gap-1 bg-[#f0eded] p-1 rounded-lg border border-[#e5e2e1] text-xs font-mono-caps">
+            <button
+              onClick={() => onToggleAppMode('showcase')}
+              className={`px-2.5 py-1 rounded transition-all flex items-center gap-1 ${
+                appMode === 'showcase'
+                  ? 'bg-[#2B5A64] text-white font-bold shadow-sm'
+                  : 'text-[#586061] hover:text-[#1c1b1b]'
+              }`}
+            >
+              <Sparkles className="w-3 h-3 text-amber-300" />
+              <span>Showcase</span>
+            </button>
+            <button
+              onClick={() => onToggleAppMode('live')}
+              className={`px-2.5 py-1 rounded transition-all flex items-center gap-1 ${
+                appMode === 'live'
+                  ? 'bg-[#2B5A64] text-white font-bold shadow-sm'
+                  : 'text-[#586061] hover:text-[#1c1b1b]'
+              }`}
+            >
+              <Layout className="w-3 h-3" />
+              <span>Live App</span>
+            </button>
+          </div>
+        )}
+      </div>
 
       <button
         onClick={onLogoClick}
@@ -39,6 +72,18 @@ export const Header: React.FC<HeaderProps> = ({
       </button>
 
       <div className="flex items-center gap-1">
+        {onToggleAppMode && (
+          <div className="md:hidden flex items-center bg-[#f0eded] p-1 rounded-lg border border-[#e5e2e1] text-[10px] font-mono-caps mr-1">
+            <button
+              onClick={() => onToggleAppMode(appMode === 'showcase' ? 'live' : 'showcase')}
+              className="px-2 py-0.5 bg-[#2B5A64] text-white font-bold rounded flex items-center gap-1"
+            >
+              <Sparkles className="w-3 h-3 text-amber-300" />
+              <span>{appMode === 'showcase' ? 'Live' : 'Showcase'}</span>
+            </button>
+          </div>
+        )}
+
         {onOpenSearch && (
           <button
             onClick={onOpenSearch}
@@ -65,3 +110,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

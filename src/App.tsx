@@ -9,11 +9,15 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { UxComparisonBanner } from './components/UxComparisonBanner';
 import { UserProfileModal } from './components/UserProfileModal';
 import { BeforeAfterSummaryModal } from './components/BeforeAfterSummaryModal';
+import { ShowcaseView } from './components/ShowcaseView';
 import { Footer } from './components/Footer';
 import { PRODUCTS } from './data/products';
 import { Product, CartItem, ColorOption, UserProfile } from './types';
 
 export default function App() {
+  // App Mode ('showcase' = presentation screens 1 & 2, 'live' = interactive store prototype)
+  const [appMode, setAppMode] = useState<'showcase' | 'live'>('showcase');
+
   // UX Showcase Mode ('before' = manual size guide modal, 'after' = auto-fit recommendation based on profile & past purchases)
   const [uxMode, setUxMode] = useState<'before' | 'after'>('after');
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
@@ -132,12 +136,14 @@ export default function App() {
   const handleCategorySelect = (category: string) => {
     setActiveCategory(category);
     setCurrentView('catalog');
+    if (appMode === 'showcase') setAppMode('live');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setCurrentView('detail');
+    if (appMode === 'showcase') setAppMode('live');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -153,44 +159,65 @@ export default function App() {
         onLogoClick={() => {
           setSelectedProduct(PRODUCTS[0]);
           setCurrentView('detail');
+          setAppMode('showcase');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenSearch={() => setCurrentView('catalog')}
+        onOpenSearch={() => {
+          setCurrentView('catalog');
+          setAppMode('live');
+        }}
+        appMode={appMode}
+        onToggleAppMode={(mode) => setAppMode(mode)}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 pt-16">
-        {/* Sticky UX Comparison Control Banner */}
-        <UxComparisonBanner
-          uxMode={uxMode}
-          onToggleMode={(mode) => setUxMode(mode)}
-          onOpenProfile={() => setProfileModalOpen(true)}
-        />
-
-        {currentView === 'detail' ? (
-          <ProductDetailView
-            product={selectedProduct}
-            onAddToCart={handleAddToCart}
-            onOpenSizeGuide={() => setSizeGuideOpen(true)}
-            onSelectRelatedProduct={handleSelectProduct}
-            allProducts={PRODUCTS}
-            uxMode={uxMode}
-            userProfile={userProfile}
-            onOpenProfile={() => setProfileModalOpen(true)}
+        {appMode === 'showcase' ? (
+          <ShowcaseView
+            onGoToLiveApp={(targetUxMode) => {
+              setUxMode(targetUxMode);
+              setAppMode('live');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         ) : (
-          <CatalogView
-            products={PRODUCTS}
-            selectedCategory={activeCategory}
-            onSelectCategory={setActiveCategory}
-            onSelectProduct={handleSelectProduct}
-          />
+          <>
+            {/* Sticky UX Comparison Control Banner in Live Mode */}
+            <UxComparisonBanner
+              uxMode={uxMode}
+              onToggleMode={(mode) => setUxMode(mode)}
+              onOpenProfile={() => setProfileModalOpen(true)}
+            />
+
+            {currentView === 'detail' ? (
+              <ProductDetailView
+                product={selectedProduct}
+                onAddToCart={handleAddToCart}
+                onOpenSizeGuide={() => setSizeGuideOpen(true)}
+                onSelectRelatedProduct={handleSelectProduct}
+                allProducts={PRODUCTS}
+                uxMode={uxMode}
+                userProfile={userProfile}
+                onOpenProfile={() => setProfileModalOpen(true)}
+              />
+            ) : (
+              <CatalogView
+                products={PRODUCTS}
+                selectedCategory={activeCategory}
+                onSelectCategory={setActiveCategory}
+                onSelectProduct={handleSelectProduct}
+              />
+            )}
+          </>
         )}
       </main>
 
       {/* Footer */}
       <Footer
-        onOpenSizeGuide={() => setSizeGuideOpen(true)}
+        onOpenSizeGuide={() => {
+          setSizeGuideOpen(true);
+          if (appMode === 'showcase') setAppMode('live');
+        }}
         onSelectCategory={handleCategorySelect}
       />
 
@@ -203,6 +230,7 @@ export default function App() {
         onViewAllProducts={() => {
           setActiveCategory('All');
           setCurrentView('catalog');
+          setAppMode('live');
         }}
       />
 
@@ -238,7 +266,10 @@ export default function App() {
       <BeforeAfterSummaryModal
         isOpen={summaryModalOpen}
         onClose={() => setSummaryModalOpen(false)}
-        onSelectMode={(mode) => setUxMode(mode)}
+        onSelectMode={(mode) => {
+          setUxMode(mode);
+          setAppMode('live');
+        }}
         currentMode={uxMode}
       />
 
@@ -256,4 +287,5 @@ export default function App() {
     </div>
   );
 }
+
 

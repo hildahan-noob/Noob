@@ -6,16 +6,47 @@ import { ProductDetailView } from './components/ProductDetailView';
 import { CatalogView } from './components/CatalogView';
 import { SizeGuideModal } from './components/SizeGuideModal';
 import { CheckoutModal } from './components/CheckoutModal';
+import { UxComparisonBanner } from './components/UxComparisonBanner';
+import { UserProfileModal } from './components/UserProfileModal';
+import { BeforeAfterSummaryModal } from './components/BeforeAfterSummaryModal';
 import { Footer } from './components/Footer';
 import { PRODUCTS } from './data/products';
-import { Product, CartItem, ColorOption } from './types';
+import { Product, CartItem, ColorOption, UserProfile } from './types';
 
 export default function App() {
+  // UX Showcase Mode ('before' = manual size guide modal, 'after' = auto-fit recommendation based on profile & past purchases)
+  const [uxMode, setUxMode] = useState<'before' | 'after'>('after');
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+
+  // User Profile State (Hilda Han)
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    name: 'Hilda Han',
+    email: 'hildahan@gmail.com',
+    heightCm: 178,
+    weightKg: 72,
+    fitPreference: 'Athletic Fit',
+    pastOrders: [
+      {
+        productTitle: 'ELITE JOGGER',
+        sizeBought: 'M',
+        fitFeedback: 'Fits Perfect',
+        date: '12 June 2024',
+      },
+      {
+        productTitle: 'CORE BASELAYER',
+        sizeBought: 'M',
+        fitFeedback: 'Fits Perfect',
+        date: '28 January 2024',
+      },
+    ],
+  });
+
   // Navigation & Modal states
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   // App view state
   const [currentView, setCurrentView] = useState<'detail' | 'catalog'>('detail');
@@ -24,20 +55,22 @@ export default function App() {
 
   // Shopping cart state
   const [cartItems, setCartItems] = useState<CartItem[]>([
-    // Pre-populate with Ultimate Hoodie for seamless visual preview matching design
     {
       product: PRODUCTS[0],
       selectedColor: PRODUCTS[0].colors[0],
       selectedSize: 'M',
-      quantity: 1
-    }
+      quantity: 1,
+    },
   ]);
 
   // Cart Handlers
   const handleAddToCart = (product: Product, size: string, color: ColorOption) => {
     setCartItems((prev) => {
       const existingIdx = prev.findIndex(
-        (i) => i.product.id === product.id && i.selectedSize === size && i.selectedColor.hex === color.hex
+        (i) =>
+          i.product.id === product.id &&
+          i.selectedSize === size &&
+          i.selectedColor.hex === color.hex
       );
 
       if (existingIdx > -1) {
@@ -51,13 +84,12 @@ export default function App() {
             product,
             selectedSize: size,
             selectedColor: color,
-            quantity: 1
-          }
+            quantity: 1,
+          },
         ];
       }
     });
 
-    // Auto open cart drawer on add
     setCartDrawerOpen(true);
   };
 
@@ -128,6 +160,13 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 pt-16">
+        {/* Sticky UX Comparison Control Banner */}
+        <UxComparisonBanner
+          uxMode={uxMode}
+          onToggleMode={(mode) => setUxMode(mode)}
+          onOpenProfile={() => setProfileModalOpen(true)}
+        />
+
         {currentView === 'detail' ? (
           <ProductDetailView
             product={selectedProduct}
@@ -135,6 +174,9 @@ export default function App() {
             onOpenSizeGuide={() => setSizeGuideOpen(true)}
             onSelectRelatedProduct={handleSelectProduct}
             allProducts={PRODUCTS}
+            uxMode={uxMode}
+            userProfile={userProfile}
+            onOpenProfile={() => setProfileModalOpen(true)}
           />
         ) : (
           <CatalogView
@@ -177,11 +219,27 @@ export default function App() {
         }}
       />
 
-      {/* Size Guide Modal */}
+      {/* Size Guide Modal (Used in 'Before' mode or manual review) */}
       <SizeGuideModal
         isOpen={sizeGuideOpen}
         onClose={() => setSizeGuideOpen(false)}
         productTitle={selectedProduct.title}
+      />
+
+      {/* User Fit Profile Modal */}
+      <UserProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        userProfile={userProfile}
+        onUpdateProfile={(updated) => setUserProfile(updated)}
+      />
+
+      {/* Before & After UX Impact Showcase Modal */}
+      <BeforeAfterSummaryModal
+        isOpen={summaryModalOpen}
+        onClose={() => setSummaryModalOpen(false)}
+        onSelectMode={(mode) => setUxMode(mode)}
+        currentMode={uxMode}
       />
 
       {/* Checkout Modal */}
@@ -198,3 +256,4 @@ export default function App() {
     </div>
   );
 }
+

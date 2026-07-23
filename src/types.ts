@@ -1,3 +1,24 @@
+export interface UserProfile {
+  name: string;
+  email: string;
+  heightCm: number;
+  weightKg: number;
+  fitPreference: 'Athletic Fit' | 'Relaxed Fit' | 'Slim Fit';
+  pastOrders: {
+    productTitle: string;
+    sizeBought: string;
+    fitFeedback: 'Fits Perfect' | 'Slightly Tight' | 'Slightly Loose';
+    date: string;
+  }[];
+}
+
+export interface SizeRecommendation {
+  recommendedSize: string;
+  matchScore: number;
+  reason: string;
+  pastPurchaseReference?: string;
+}
+
 export interface ColorOption {
   name: string;
   hex: string;
@@ -28,3 +49,4 @@ export interface CartItem {
   selectedSize: string;
   quantity: number;
 }
+

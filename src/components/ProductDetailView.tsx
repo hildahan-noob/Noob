@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown, Check, Sparkles, Truck, ShieldCheck, RefreshCw } from 'lucide-react';
-import { Product, ColorOption } from '../types';
+import { ChevronDown, Check, Sparkles, Truck, ShieldCheck, RefreshCw, UserCheck, Info, Sparkle, SlidersHorizontal, ArrowRight } from 'lucide-react';
+import { Product, ColorOption, UserProfile } from '../types';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -8,6 +8,9 @@ interface ProductDetailViewProps {
   onOpenSizeGuide: () => void;
   onSelectRelatedProduct: (product: Product) => void;
   allProducts: Product[];
+  uxMode: 'before' | 'after';
+  userProfile: UserProfile;
+  onOpenProfile: () => void;
 }
 
 export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
@@ -15,12 +18,21 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   onAddToCart,
   onOpenSizeGuide,
   onSelectRelatedProduct,
-  allProducts
+  allProducts,
+  uxMode,
+  userProfile,
+  onOpenProfile
 }) => {
   const [selectedColor, setSelectedColor] = useState<ColorOption>(
     product.colors[0] || { name: 'Deep Teal', hex: '#2B5A64', image: product.heroImages[0] }
   );
-  const [selectedSize, setSelectedSize] = useState<string>(product.sizes[1] || 'M');
+
+  // Auto-recommendation logic for 'after' mode
+  const recommendedSize = 'M'; // Calculated for 178cm / 72kg
+
+  const [selectedSize, setSelectedSize] = useState<string>(
+    uxMode === 'after' ? recommendedSize : 'M'
+  );
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
   const [addedAnimation, setAddedAnimation] = useState(false);
 
@@ -29,16 +41,23 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   const [openDetails, setOpenDetails] = useState(false);
   const [openCare, setOpenCare] = useState(false);
 
+  // Sync selected size if uxMode changes
+  React.useEffect(() => {
+    if (uxMode === 'after') {
+      setSelectedSize(recommendedSize);
+    }
+  }, [uxMode]);
+
   // Update selected color when product changes
   React.useEffect(() => {
     if (product.colors && product.colors.length > 0) {
       setSelectedColor(product.colors[0]);
     }
     if (product.sizes && product.sizes.length > 0) {
-      setSelectedSize(product.sizes[1] || product.sizes[0]);
+      setSelectedSize(uxMode === 'after' ? recommendedSize : product.sizes[1] || product.sizes[0]);
     }
     setActiveImageIdx(0);
-  }, [product]);
+  }, [product, uxMode]);
 
   const handleAdd = () => {
     onAddToCart(product, selectedSize, selectedColor);
@@ -65,6 +84,17 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
           {product.isNewArrival && (
             <div className="absolute top-4 left-4 bg-[#2B5A64] text-white px-3 py-1 text-[10px] font-mono-caps uppercase tracking-widest font-bold flex items-center gap-1 shadow-md">
               <Sparkles className="w-3 h-3" /> New Arrival
+            </div>
+          )}
+
+          {/* After Mode - Smart Profile Badge on Hero */}
+          {uxMode === 'after' && (
+            <div className="absolute bottom-12 right-4 bg-white/90 backdrop-blur-md border border-[#2B5A64]/30 px-3 py-1.5 rounded-lg shadow-md flex items-center gap-2 text-xs">
+              <UserCheck className="w-4 h-4 text-[#2B5A64]" />
+              <div>
+                <p className="font-mono-caps text-[10px] text-[#586061]">Welcome back, <strong className="text-[#1c1b1b]">{userProfile.name}</strong></p>
+                <p className="font-mono-caps text-[9px] text-[#2B5A64] font-bold">Auto-Fit Profile Active</p>
+              </div>
             </div>
           )}
         </div>
@@ -127,34 +157,102 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
           </div>
         </div>
 
-        {/* Size Selection */}
+        {/* Size Selection Area - BEFORE vs AFTER DIFFERENCE */}
         <div className="flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <span className="font-mono-caps text-xs text-[#40484a] uppercase tracking-wider font-medium">
+          {/* AFTER MODE SMART RECOMMENDATION CARD */}
+          {uxMode === 'after' ? (
+            <div className="bg-[#2B5A64]/10 border border-[#2B5A64]/40 rounded-xl p-4 space-y-2">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-[#2B5A64] text-white flex items-center justify-center shrink-0">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-mono-caps text-xs font-bold text-[#2B5A64] uppercase tracking-wider block">
+                      Recommended for {userProfile.name}: Size {recommendedSize}
+                    </span>
+                    <p className="text-xs text-[#1c1b1b] font-medium font-['Hanken_Grotesk'] mt-0.5">
+                      98% Fit Match based on your saved body profile & past orders
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={onOpenProfile}
+                  className="text-[11px] font-mono-caps text-[#2B5A64] underline hover:text-[#1c1b1b] font-bold shrink-0"
+                >
+                  Edit Profile
+                </button>
+              </div>
+
+              {/* Specific reasoning details */}
+              <div className="pt-2 border-t border-[#2B5A64]/20 grid grid-cols-2 gap-2 text-[11px] font-mono-caps text-[#40484a]">
+                <div className="bg-white/80 p-2 rounded border border-[#e5e2e1]">
+                  <span className="text-[#586061] block text-[10px]">Saved Profile</span>
+                  <strong className="text-[#1c1b1b]">
+                    {userProfile.heightCm}cm / {userProfile.weightKg}kg
+                  </strong>
+                </div>
+                <div className="bg-white/80 p-2 rounded border border-[#e5e2e1]">
+                  <span className="text-[#586061] block text-[10px]">Past Order Memory</span>
+                  <strong className="text-[#1c1b1b]">
+                    Elite Jogger in M (Fits Perfect)
+                  </strong>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* BEFORE MODE NOTICE BANNER */
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs font-mono-caps text-amber-900 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Standard Flow: Manual Size Selection &amp; Measurement Entry Required</span>
+              </div>
+            </div>
+          )}
+
+          {/* Size Header */}
+          <div className="flex justify-between items-center mt-1">
+            <span className="font-mono-caps text-xs text-[#40484a] uppercase tracking-wider font-medium flex items-center gap-2">
               SIZE SELECTION
+              {uxMode === 'after' && (
+                <span className="bg-emerald-100 text-emerald-800 text-[9px] px-2 py-0.5 rounded font-bold uppercase">
+                  Auto-Selected
+                </span>
+              )}
             </span>
+
             <button
               onClick={onOpenSizeGuide}
-              className="text-[#2B5A64] font-mono-caps text-xs underline underline-offset-4 hover:opacity-80 transition-opacity font-semibold"
+              className="text-[#2B5A64] font-mono-caps text-xs underline underline-offset-4 hover:opacity-80 transition-opacity font-semibold flex items-center gap-1"
             >
-              SIZE GUIDE
+              <span>SIZE GUIDE</span>
+              {uxMode === 'before' && <span className="text-[10px] text-amber-700">(Manual Calculator)</span>}
             </button>
           </div>
 
+          {/* Size Grid */}
           <div className="grid grid-cols-4 gap-2">
             {product.sizes.map((sz) => {
               const isSelected = selectedSize === sz;
+              const isRecommended = uxMode === 'after' && sz === recommendedSize;
+
               return (
                 <button
                   key={sz}
                   onClick={() => setSelectedSize(sz)}
-                  className={`h-12 flex items-center justify-center font-mono-caps text-xs uppercase transition-all rounded-sm ${
+                  className={`h-14 flex flex-col items-center justify-center font-mono-caps text-xs uppercase transition-all rounded-sm relative ${
                     isSelected
                       ? 'border-2 border-[#2B5A64] bg-[#F7F8F8] font-bold text-[#1c1b1b] shadow-sm'
                       : 'border border-[#c0c8ca] text-[#40484a] hover:bg-[#F7F8F8] active:bg-[#f0eded]'
                   }`}
                 >
-                  {sz}
+                  <span className="text-sm">{sz}</span>
+                  {isRecommended && (
+                    <span className="text-[8px] bg-[#2B5A64] text-white px-1 py-0.5 rounded-xs mt-0.5 font-bold tracking-tight">
+                      RECOMMENDED
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -175,7 +273,9 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                 <span>ADDED TO BAG</span>
               </>
             ) : (
-              <span>ADD TO CART</span>
+              <span>
+                ADD TO CART {uxMode === 'after' && `(SIZE ${selectedSize})`}
+              </span>
             )}
           </button>
 
@@ -196,7 +296,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
           </div>
           <div className="flex flex-col items-center gap-1">
             <ShieldCheck className="w-4 h-4 text-[#2B5A64]" />
-            <span>Premium Guarantee</span>
+            <span>Fit Guarantee</span>
           </div>
         </div>
       </section>
@@ -325,3 +425,4 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     </div>
   );
 };
+

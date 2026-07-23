@@ -21,7 +21,7 @@ interface ShowcaseViewProps {
 }
 
 export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => {
-  const [currentStage, setCurrentStage] = useState<1 | 2>(1);
+  const [currentStage, setCurrentStage] = useState<1 | 2 | 3>(1);
   const [activeHighlight, setActiveHighlight] = useState<'profile' | 'badge' | 'size'>('badge');
 
   return (
@@ -38,13 +38,15 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                 CLOSERS Framework UX Showcase
               </span>
               <span className="bg-amber-400/20 text-amber-300 text-[10px] font-mono-caps px-2 py-0.5 rounded font-bold border border-amber-400/30">
-                Screen {currentStage} of 2
+                Screen {currentStage} of 3
               </span>
             </div>
             <h1 className="text-lg font-bold font-['Hanken_Grotesk'] text-white">
               {currentStage === 1
-                ? 'Stage 1: Current Friction (Convenience Analysis)'
-                : 'Stage 2: Enhanced Smart Auto-Sizing UX'}
+                ? 'Screen 1: Original Product Page (Convenience Analysis)'
+                : currentStage === 2
+                ? 'Screen 2: Friction Scenario (Manual Size Calculator Pop-Up)'
+                : 'Screen 3: Enhanced Solution (Why This Works)'}
             </h1>
           </div>
         </div>
@@ -53,7 +55,7 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setCurrentStage(1)}
-            className={`px-3.5 py-2 text-xs font-mono-caps rounded-lg transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-mono-caps rounded-lg transition-all flex items-center gap-1.5 ${
               currentStage === 1
                 ? 'bg-amber-600 text-white font-bold shadow'
                 : 'bg-[#313030] text-[#c1c8ca] hover:text-white'
@@ -64,23 +66,35 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
 
           <button
             onClick={() => setCurrentStage(2)}
-            className={`px-3.5 py-2 text-xs font-mono-caps rounded-lg transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-mono-caps rounded-lg transition-all flex items-center gap-1.5 ${
               currentStage === 2
+                ? 'bg-amber-700 text-white font-bold shadow'
+                : 'bg-[#313030] text-[#c1c8ca] hover:text-white'
+            }`}
+          >
+            <AlertCircle className="w-3.5 h-3.5 text-amber-300" />
+            <span>Screen 2 (Pop-Up)</span>
+          </button>
+
+          <button
+            onClick={() => setCurrentStage(3)}
+            className={`px-3 py-1.5 text-xs font-mono-caps rounded-lg transition-all flex items-center gap-1.5 ${
+              currentStage === 3
                 ? 'bg-[#2B5A64] text-white font-bold shadow'
                 : 'bg-[#313030] text-[#c1c8ca] hover:text-white'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Screen 2 (After)</span>
+            <span>Screen 3 (After)</span>
           </button>
 
           <div className="h-6 w-px bg-[#586061] mx-1 hidden sm:block" />
 
           <button
-            onClick={() => onGoToLiveApp(currentStage === 1 ? 'before' : 'after')}
-            className="px-3.5 py-2 bg-white text-[#1c1b1b] hover:bg-[#f0eded] text-xs font-mono-caps rounded-lg font-bold transition-all flex items-center gap-1.5 shadow"
+            onClick={() => onGoToLiveApp(currentStage === 3 ? 'after' : 'before')}
+            className="px-3 py-1.5 bg-white text-[#1c1b1b] hover:bg-[#f0eded] text-xs font-mono-caps rounded-lg font-bold transition-all flex items-center gap-1.5 shadow"
           >
-            <span>Launch Live Interactive App</span>
+            <span>Launch Live App</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -104,7 +118,7 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                 </span>
               </div>
               <span className="text-[10px] font-mono-caps bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-bold uppercase">
-                Original Page (Before)
+                Original Webpage (Before)
               </span>
             </div>
 
@@ -115,12 +129,15 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                 <span className="font-bold tracking-tighter text-lg font-['Hanken_Grotesk'] text-[#1c1b1b]">
                   HANEEZA
                 </span>
-                <ShoppingBag className="w-5 h-5 text-[#2B5A64]" />
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono-caps text-[#586061]">Logged in as: <strong>Hilda</strong></span>
+                  <ShoppingBag className="w-5 h-5 text-[#2B5A64]" />
+                </div>
               </div>
 
               {/* Product Layout */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="aspect-[3/4] bg-[#f0eded] rounded overflow-hidden relative">
+                <div className="aspect-[3/4] bg-[#f0eded] rounded overflow-hidden relative border border-[#e5e2e1]">
                   <img
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoMQtRvEHUp-_AdBclIMW5BSfRK3QZ2rHZZDLAFs75LnnKB3nHNANq4dNjOUCm0CGkeN3wb-6c9e0tsCfJ4cY66oOgAk9QZi_23x9I_vlQ4b6pC0kfUi9EsJc-xDx6hz1aOI5j9ALnpYhdpB0ToGAjWudAR2ymNL2CON09iXsq8UkG3scu_3N6G9wYO2uixHpdlY4mwCdKAvQj5oc6EXQ9f64Y0IJBq-7iJMmC7s9ob8bnbnxUK8LqiO3iMfqQzpv4MGLIdfRABw"
                     alt="Ultimate Hoodie"
@@ -146,14 +163,18 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                         SIZE SELECTION
                       </span>
                       {/* Highlighted Size Guide Link */}
-                      <button className="text-xs font-mono-caps text-[#2B5A64] underline font-bold bg-amber-200/80 px-2 py-1 rounded animate-pulse">
-                        SIZE GUIDE
+                      <button
+                        onClick={() => setCurrentStage(2)}
+                        className="text-xs font-mono-caps text-[#2B5A64] underline font-bold bg-amber-200 px-2 py-1 rounded animate-pulse flex items-center gap-1"
+                      >
+                        <MousePointerClick className="w-3 h-3 text-amber-800" />
+                        <span>SIZE GUIDE</span>
                       </button>
                     </div>
 
                     <div className="grid grid-cols-4 gap-1 text-center font-mono-caps text-xs">
                       <div className="p-2 border border-[#c0c8ca] bg-white text-[#586061]">S</div>
-                      <div className="p-2 border-2 border-[#2B5A64] bg-white font-bold text-[#1c1b1b]">
+                      <div className="p-2 border border-[#c0c8ca] bg-white text-[#586061]">
                         M
                       </div>
                       <div className="p-2 border border-[#c0c8ca] bg-white text-[#586061]">L</div>
@@ -161,19 +182,19 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                     </div>
                   </div>
 
-                  {/* Simulated Pop-Up Overlay Trigger preview */}
-                  <div className="bg-white p-3 rounded border border-[#e5e2e1] shadow-md space-y-2 text-xs">
-                    <div className="flex items-center gap-1 text-amber-800 font-mono-caps font-bold">
-                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>Friction Step: Manual Pop-up Required</span>
+                  {/* Callout box guiding to pop-up */}
+                  <div className="bg-amber-100/70 p-3 rounded-lg border border-amber-300 text-xs font-['Hanken_Grotesk'] text-amber-900 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold font-mono-caps">
+                      <AlertCircle className="w-4 h-4 text-amber-700" />
+                      <span>User Intent: Unsure about sizing</span>
                     </div>
-                    <p className="text-[#586061] text-[11px] leading-snug font-['Hanken_Grotesk']">
-                      User clicks 'SIZE GUIDE' link → Pop-up modal opens → User types Height (cm) & Weight (kg) → Clicks 'Calculate Recommended Size' → Inspects size → Closes modal → Selects size button.
+                    <p className="text-[11px] text-amber-800 leading-tight">
+                      Hilda wants to purchase this hoodie, but doesn't know whether S, M, or L is right. She clicks 'SIZE GUIDE' to find out.
                     </p>
                   </div>
 
-                  <button className="w-full py-3 bg-[#2B5A64] text-white font-mono-caps text-xs font-bold uppercase rounded">
-                    ADD TO CART
+                  <button className="w-full py-3 bg-[#2B5A64] text-white font-mono-caps text-xs font-bold uppercase rounded opacity-80 cursor-not-allowed">
+                    ADD TO CART (Select Size First)
                   </button>
                 </div>
               </div>
@@ -206,17 +227,15 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                 A logged in user on the Haneeza website visits a product page that she is keen to view in more detail. She is keen to make a purchase but she wants to understand what size she needs to buy.
               </p>
 
-              {/* Additional Context Box */}
+              {/* Context Box */}
               <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
                 <h4 className="font-mono-caps text-xs text-amber-900 font-bold uppercase flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 text-amber-700" />
-                  Current UX Gap &amp; Friction Points
+                  Initial User Dilemma
                 </h4>
-                <ul className="space-y-1.5 text-xs text-amber-800 font-['Hanken_Grotesk'] list-disc pl-4">
-                  <li><strong>Redundant Effort:</strong> The user is already logged in, yet the platform forces her to re-enter her height and weight every single session.</li>
-                  <li><strong>Unutilized Data:</strong> Past successful purchases (e.g., Elite Jogger in Size M) are ignored by the product page interface.</li>
-                  <li><strong>Decision Drop-off:</strong> Modal pop-ups disrupt the purchasing momentum and increase cognitive load.</li>
-                </ul>
+                <p className="text-xs text-amber-800 font-['Hanken_Grotesk'] leading-relaxed">
+                  Despite being a returning customer with completed orders in her account history, the standard website does not automatically present her size. She must navigate a manual pop-up calculator.
+                </p>
               </div>
 
               {/* Next Button */}
@@ -224,7 +243,7 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                 onClick={() => setCurrentStage(2)}
                 className="w-full py-4 bg-[#2B5A64] text-white font-mono-caps text-xs tracking-widest uppercase rounded-lg font-bold hover:opacity-95 transition-all flex items-center justify-center gap-2 shadow-md"
               >
-                <span>See Screen 2: Enhanced UX Solution</span>
+                <span>View Screen 2: The Pop-Up Scenario</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -233,9 +252,176 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
       )}
 
       {/* ========================================================================= */}
-      {/* SCREEN 2: AFTER / IMPROVED WEBPAGE + HIGHLIGHTS + "WHY THIS WORKS"       */}
+      {/* SCREEN 2: IN-BETWEEN SCREEN - MANUAL SIZE GUIDE POP-UP SCENARIO            */}
       {/* ========================================================================= */}
       {currentStage === 2 && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* LEFT SIDE: Webpage with Rendered Pop-up Window Overlay */}
+          <div className="lg:col-span-7 bg-white rounded-2xl border-2 border-amber-500 shadow-2xl overflow-hidden relative">
+            {/* Browser Header Bar */}
+            <div className="bg-[#f0eded] px-4 py-3 border-b border-[#e5e2e1] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-amber-400" />
+                <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                <span className="text-xs font-mono-caps text-[#586061] ml-2">
+                  https://haneeza.com/products/ultimate-hoodie#sizeguide
+                </span>
+              </div>
+              <span className="text-[10px] font-mono-caps bg-amber-500 text-white px-2.5 py-0.5 rounded font-bold uppercase">
+                Manual Pop-Up Scenario
+              </span>
+            </div>
+
+            {/* Blurred Background Page + Active Modal Window Overlay */}
+            <div className="p-6 bg-[#fcf9f8] relative min-h-[480px]">
+              {/* Dimmed Background */}
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-xs z-10 flex items-center justify-center p-4">
+                {/* POP-UP MODAL WINDOW */}
+                <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border-2 border-amber-400 overflow-hidden text-left animate-in zoom-in-95 duration-200">
+                  {/* Modal Header */}
+                  <div className="bg-[#1c1b1b] text-white p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Ruler className="w-4 h-4 text-amber-400" />
+                      <h3 className="font-bold text-sm font-['Hanken_Grotesk'] uppercase tracking-tight">
+                        Size &amp; Fit Calculator Modal
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-mono-caps bg-amber-400 text-black font-bold px-2 py-0.5 rounded">
+                      Step 3 of 5
+                    </span>
+                  </div>
+
+                  {/* Modal Body / Inputs */}
+                  <div className="p-5 space-y-4 text-xs font-['Hanken_Grotesk']">
+                    <p className="text-[#586061] text-[11px]">
+                      Please enter your measurements below to calculate your ideal fit:
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-2.5 bg-[#fcf9f8] rounded border border-[#c0c8ca]">
+                        <label className="block text-[10px] font-mono-caps text-[#586061]">Height (cm)</label>
+                        <input
+                          type="text"
+                          readOnly
+                          value="178"
+                          className="w-full font-bold text-sm text-[#1c1b1b] bg-transparent focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="p-2.5 bg-[#fcf9f8] rounded border border-[#c0c8ca]">
+                        <label className="block text-[10px] font-mono-caps text-[#586061]">Weight (kg)</label>
+                        <input
+                          type="text"
+                          readOnly
+                          value="72"
+                          className="w-full font-bold text-sm text-[#1c1b1b] bg-transparent focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-mono-caps text-[#586061] mb-1">
+                        Preferred Cut
+                      </label>
+                      <select disabled className="w-full p-2 bg-[#fcf9f8] border border-[#c0c8ca] rounded text-xs">
+                        <option>Athletic Fit (Standard)</option>
+                      </select>
+                    </div>
+
+                    {/* Calculated Output Banner */}
+                    <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-center">
+                      <span className="text-[10px] font-mono-caps text-amber-800 uppercase block font-semibold">
+                        Calculated Recommendation
+                      </span>
+                      <strong className="text-lg font-bold text-[#1c1b1b] font-mono-caps">
+                        Recommended Size: M
+                      </strong>
+                    </div>
+
+                    <button className="w-full py-2.5 bg-[#2B5A64] text-white font-mono-caps text-xs uppercase rounded font-bold">
+                      Close Modal &amp; Return to Product
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Background Mock Content beneath blur */}
+              <div className="opacity-30 blur-xs space-y-4">
+                <div className="h-6 bg-gray-300 w-1/3 rounded" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-48 bg-gray-200 rounded" />
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-300 rounded w-3/4" />
+                    <div className="h-4 bg-gray-300 rounded w-1/2" />
+                    <div className="h-10 bg-gray-200 rounded" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE: Friction Analysis & Steps Breakdown */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-[#e5e2e1] shadow-lg space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-xs font-mono-caps font-bold">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-700" />
+                <span>BEFORE: MANUAL FRICTION ANALYSIS</span>
+              </div>
+
+              <h2 className="text-2xl font-bold font-['Hanken_Grotesk'] text-[#1c1b1b] tracking-tight">
+                The Friction Barrier
+              </h2>
+
+              <p className="text-sm text-[#40484a] font-['Hanken_Grotesk'] leading-relaxed">
+                In the standard flow, the user is interrupted by a pop-up modal requiring <strong>5 manual interactions</strong> before she can add the item to her cart.
+              </p>
+
+              {/* 5 Friction Steps Sequence */}
+              <div className="space-y-2.5 text-xs font-['Hanken_Grotesk']">
+                <div className="p-2.5 bg-[#fcf9f8] rounded-lg border border-[#e5e2e1] flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center shrink-0 font-mono-caps">1</span>
+                  <span>Click <strong>"SIZE GUIDE"</strong> link on product page</span>
+                </div>
+
+                <div className="p-2.5 bg-[#fcf9f8] rounded-lg border border-[#e5e2e1] flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center shrink-0 font-mono-caps">2</span>
+                  <span>Wait for modal window overlay to pop up</span>
+                </div>
+
+                <div className="p-2.5 bg-amber-100/80 rounded-lg border border-amber-300 flex items-center gap-3 font-semibold">
+                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center shrink-0 font-mono-caps">3</span>
+                  <span>Re-enter body height (178cm) and weight (72kg)</span>
+                </div>
+
+                <div className="p-2.5 bg-[#fcf9f8] rounded-lg border border-[#e5e2e1] flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center shrink-0 font-mono-caps">4</span>
+                  <span>Click <strong>"Calculate Size"</strong> &amp; read output (Size M)</span>
+                </div>
+
+                <div className="p-2.5 bg-[#fcf9f8] rounded-lg border border-[#e5e2e1] flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center shrink-0 font-mono-caps">5</span>
+                  <span>Close modal, find Size M button, and add to cart</span>
+                </div>
+              </div>
+
+              {/* Action Button to Screen 3 */}
+              <button
+                onClick={() => setCurrentStage(3)}
+                className="w-full py-4 bg-[#2B5A64] text-white font-mono-caps text-xs tracking-widest uppercase rounded-lg font-bold hover:opacity-95 transition-all flex items-center justify-center gap-2 shadow-md"
+              >
+                <span>Proceed to Screen 3: Enhanced Solution</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SCREEN 3: AFTER / IMPROVED WEBPAGE + HIGHLIGHTS + "WHY THIS WORKS"       */}
+      {/* ========================================================================= */}
+      {currentStage === 3 && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* LEFT SIDE: Improved Webpage with Highlighted Differences */}
           <div className="lg:col-span-7 space-y-4">
@@ -395,7 +581,7 @@ export const ShowcaseView: React.FC<ShowcaseViewProps> = ({ onGoToLiveApp }) => 
                     1. Eliminates Purchase Friction (Convenience)
                   </h4>
                   <p className="text-xs text-[#586061]">
-                    By pre-selecting Size M automatically, the user goes from <strong>5 manual steps</strong> (Clicking link, typing height/weight, clicking calculate, inspecting size, closing modal) to <strong>0 steps</strong>.
+                    By pre-selecting Size M automatically, the user goes from <strong>5 manual steps</strong> (Clicking link, waiting for modal, typing height/weight, clicking calculate, inspecting size, closing modal) to <strong>0 steps</strong>.
                   </p>
                 </div>
 
